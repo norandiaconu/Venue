@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Venue</string>
+    <string name="title_activity_maps">Venue</string>
+    <string name="entered">Enter the messageboard?</string>
+    <string name="title_activity_display_message">Message</string>
+    <string name="enter_button_message">Enter</string>
+</resources>
