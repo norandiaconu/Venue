@@ -3,6 +3,7 @@ package com.norandiaconu.venue;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
+import android.preference.PreferenceActivity;
 import android.provider.SyncStateContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -22,6 +23,11 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.loopj.android.http.*;//JsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -64,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                                 Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setLoiteringDelay(100)
                 .build());
-        mGeofenceList.add(new Geofence.Builder()
+        /*mGeofenceList.add(new Geofence.Builder()
                 .setRequestId("@string/apartment")
                 .setCircularRegion(mGeofenceCoordinates.get(1).latitude, mGeofenceCoordinates.get(1).longitude, mGeofenceRadius.get(1).intValue()
                         //36.181147,
@@ -76,7 +82,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                         Geofence.GEOFENCE_TRANSITION_DWELL |
                                 Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setLoiteringDelay(100)
-                .build());
+                .build());*/
+        //getLocations();
         mGeofenceStore = new GeofenceStore(this, mGeofenceList);
         //geo.getGeofencingRequest();
         //geo.setGeofence();
@@ -89,6 +96,33 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         setUpMapIfNeeded();
     }
     */
+
+    public void getLocations() {// throws JSONException {
+        VenueRestClient.get("locations/", null, new JsonHttpResponseHandler() {
+            //@Override
+            public void onSuccess(int statusCode, PreferenceActivity.Header[] headers, JSONArray locations) throws org.json.JSONException {
+                // Pull out the first event on the public timeline
+                for (int i = 0; i < locations.length(); i++) {
+                    JSONObject location = locations.getJSONObject(i);
+                    Double longi = location.getDouble("longitude");
+                    Double lati = location.getDouble("longitude");
+                    String name = location.getString("name");
+                    //iniitialize object
+                    //Geofence g = Geofence(longitude, latitude);
+                    //append g to local geofences array
+                    //mGeofenceList.append(g);
+                    mGeofenceList.add(new Geofence.Builder()
+                        .setRequestId(name)
+                        .setCircularRegion(lati, longi, 100)
+                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
+                        .setLoiteringDelay(100)
+                        .build());
+                }
+            }
+        });
+        //}
+    }
 
     @Override
     protected void onStart() {
