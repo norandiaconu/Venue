@@ -85,7 +85,7 @@ public class GeofenceStore implements ConnectionCallbacks,
             // Define the LocationRequest.
             mLocationRequest = new LocationRequest();
             // We want a location update every 10 seconds.
-            mLocationRequest.setInterval(10000);
+            mLocationRequest.setInterval(20000);
             // We want the location to be as accurate as possible.
             mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
