@@ -145,7 +145,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                             .fillColor(0x40ff0000)
                             .strokeColor(Color.TRANSPARENT).strokeWidth(2));
                 }
-                //mGeofenceStore = new GeofenceStore(MapsActivity, mGeofenceList);
+                mGeofenceStore = new GeofenceStore(MapsActivity.this, mGeofenceList);
             }
         });
         mGeofenceStore = new GeofenceStore(this, mGeofenceList);

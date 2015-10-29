@@ -18,6 +18,14 @@ import java.util.List;
  * Created by NORAN on 9/17/2015.
  */
 public class GeofenceIntentService extends IntentService {
+
+    //public String bam = "";
+
+    //String[] geos;
+    //String[] geofenceIds;
+    //String blah;
+    String notText = "";
+
     public GeofenceIntentService() {
         super("GeofenceIntentService");
     }
@@ -56,6 +64,7 @@ public class GeofenceIntentService extends IntentService {
     }
 
     private void sendNotification(Context context, String notificationText, String notificationTitle) {
+        notText = notificationText;
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = pm.newWakeLock(
                 PowerManager.PARTIAL_WAKE_LOCK, "");
@@ -74,23 +83,36 @@ public class GeofenceIntentService extends IntentService {
         wakeLock.release();
     }
 
-    private String getTriggeringGeofences(Intent intent) {
+    public String getTriggeringGeofences(Intent intent) {
         GeofencingEvent geofenceEvent = GeofencingEvent.fromIntent(intent);
         List<Geofence> geofences = geofenceEvent
                 .getTriggeringGeofences();
 
-        String[] geofenceIds = new String[geofences.size()];
+        String[] geofenceIds;// = new String[geofences.size()];
+        geofenceIds = new String[geofences.size()];
+        //geos = new String[geofences.size()];
 
         for (int i = 0; i < geofences.size(); i++) {
             geofenceIds[i] = geofences.get(i).getRequestId();
+            //geos[i] = geofences.get(i).getRequestId();
         }
+
+        //blah = TextUtils.join(", ", geofenceIds);
 
         return TextUtils.join(", ", geofenceIds);
     }
 
     public void openEntrance() {
         Intent intent = new Intent(this, EntranceMessage.class);
+        String str = null;
+        intent.putExtra(notText, str);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
+
+    //public String getFences() {
+        //return geos;
+        //return geofenceIds;
+    //    return blah;
+    //}
 }

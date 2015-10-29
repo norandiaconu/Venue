@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,12 +24,21 @@ public class EntranceMessage extends FragmentActivity {
     //final static String ARG_POSITION = "position";
     //int mCurrentPosition = -1;
     PlaceholderFragment f = new PlaceholderFragment();
+    //GeofenceIntentService gis;
+    //String title = gis.notText;
+    //String title;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Log.v("", "" + title);
         setContentView(R.layout.entrance_layout);
+
+        //Bundle extras = getIntent().getExtras();
+        //title = (String) extras.get(notText);
+        //title = extras.getString(str);
+        //title = (String) savedInstanceState.getSerializable(notText);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
