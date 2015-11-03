@@ -107,7 +107,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         client.get("https://venue-api.herokuapp.com/locations/", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray locations) {//byte[] responseBody) {
-                Log.v("", "" + statusCode);
+                Log.v("", "STATUS1: " + statusCode);
                 Log.v("", locations.toString());
                 for (int i = 0; i < locations.length(); i++) {
                     try {
@@ -148,6 +148,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                 mGeofenceStore = new GeofenceStore(MapsActivity.this, mGeofenceList);
             }
         });
+        //client.cancelAllRequests(true);
+        //client.setTimeout(1);
         mGeofenceStore = new GeofenceStore(this, mGeofenceList);
 
     }
