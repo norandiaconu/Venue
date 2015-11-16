@@ -24,21 +24,30 @@ public class EntranceMessage extends FragmentActivity {
     //final static String ARG_POSITION = "position";
     //int mCurrentPosition = -1;
     PlaceholderFragment f = new PlaceholderFragment();
-    //GeofenceIntentService gis;
-    //String title = gis.notText;
-    //String title;
+    String fromIntentName = "";
+    String fromIntentId = "";
+    //String fromIntentUrl = "";
+    String [] id = new String [3];
+    String toMessage = "";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Log.v("", "" + title);
         setContentView(R.layout.entrance_layout);
 
-        //Bundle extras = getIntent().getExtras();
-        //title = (String) extras.get(notText);
-        //title = extras.getString(str);
-        //title = (String) savedInstanceState.getSerializable(notText);
+        Bundle ex = getIntent().getExtras();
+        //String fromIntentName = ex.getString("key");
+        //String fromIntentId = ex.getString("key2");
+        id = ex.getStringArray("key");
+        fromIntentName = id[0];
+        fromIntentId = id[1];
+        final String fromIntentUrl = id[2];
+        toMessage = fromIntentUrl;
+        Log.v("", "Entrance Name: " + fromIntentName);// + " " + fromIntentId);
+
+        TextView theView = (TextView)findViewById(R.id.box);
+        theView.setText(fromIntentName + " " + fromIntentId + " " + fromIntentUrl);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -47,7 +56,16 @@ public class EntranceMessage extends FragmentActivity {
         final Button enter_button = new Button(this);//(Button) findViewById(R.id.enter_button);
         enter_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //String clickUrl = fromIntentUrl;
+                //Bundle bundleName = new Bundle();
+                //Log.v("", "URL1: " + clickUrl);
+                //bundleName.putString("key2", clickUrl);
+                //bundle2.putString("key2", fromIntentId);
+                //bundle2.putStringArray("key2", id);
                 Intent intent = new Intent(v.getContext(), MessageBoard.class);
+                //intent.putExtras(bundleName);
+                Log.v("", "1" + toMessage);
+                intent.putExtra("arg", toMessage);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
@@ -55,7 +73,12 @@ public class EntranceMessage extends FragmentActivity {
     }
 
     public void clicked(View view) {
-        Intent intent = new Intent(this, MessageBoard                                                   .class);
+        //Bundle bundleName = new Bundle();
+        //bundleName.putString("key2", toMessage);
+        Intent intent = new Intent(this, MessageBoard.class);
+        //intent.putExtras(bundleName);
+        Log.v("", "2" + toMessage);
+        intent.putExtra("arg", toMessage);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,6 +42,7 @@ public class GeofenceIntentService extends IntentService {
     String notText = "";
     String globalId = "";
     String globalName = "";
+    String globalUrl = "";
     boolean dwelling = false;
 
     public GeofenceIntentService() {
@@ -164,6 +166,7 @@ public class GeofenceIntentService extends IntentService {
 
     public void moreLocations(){
         SyncHttpClient client = new SyncHttpClient();
+        client.setBasicAuth("admin", "superstrongpassword");
         client.get("https://venue-api.herokuapp.com/locations/", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray locations) {
@@ -179,6 +182,7 @@ public class GeofenceIntentService extends IntentService {
                         Log.i("", location.toString());
                         String name = location.getString("name");
                         String id = location.getString("id");
+                        String url = location.getString("messages");
                         //method(id);
                         Log.v("", "ID: " + id);
                         Log.v("", "GN: " + globalName + "; NAME: " + name);
@@ -187,6 +191,7 @@ public class GeofenceIntentService extends IntentService {
                             Log.v("", "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIDDDDDDDDDDDDDDDD: ");
                             //globalName = name;
                             globalId = id;
+                            globalUrl = url;
                             //method(id);
                             //sendNotification(GeofenceIntentService.this, id, "Title");
                             //globalID = id;
@@ -208,16 +213,27 @@ public class GeofenceIntentService extends IntentService {
         Log.v("", "FGID: " + globalId);
         //Toast toast = Toast.makeText(this, "FGN: " + globalName + "; FGID: " + globalId, 1);// Toast.LENGTH_SHORT);
         //toast.show();
+        String str = globalName;
+        String id = globalId;
+        String [] array = new String[3];
+        array[0] = globalName;
+        array[1] = globalId;
+        array[2] = globalUrl;
+        Bundle bundleName = new Bundle();
+        //bundleName.putString("key", str);
+        //bundleName.putString("key2", id);
+        bundleName.putStringArray("key", array);
         Intent intent = new Intent(this, EntranceMessage.class);
-        String str = null;
-        intent.putExtra(notText, str);
+        //String str = globalName;
+        //intent.putExtra(notText, str);
+        intent.putExtras(bundleName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
     //public String getFences() {
-        //return geos;
-        //return geofenceIds;
+    //return geos;
+    //return geofenceIds;
     //    return blah;
     //}
 }

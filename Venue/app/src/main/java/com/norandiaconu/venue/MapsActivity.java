@@ -64,7 +64,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                 // geofence.
                 .setRequestId("building")
 
-                .setCircularRegion(mGeofenceCoordinates.get(0).latitude, mGeofenceCoordinates.get(0).longitude, mGeofenceRadius.get(0).intValue()
+                //.setCircularRegion(mGeofenceCoordinates.get(0).latitude, mGeofenceCoordinates.get(0).longitude, mGeofenceRadius.get(0).intValue()
+                .setCircularRegion(0,0,1
                         //36.2141684,
                         //-81.6808903,
                         //100
@@ -104,6 +105,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
 
     public void getLocations() {// throws JSONException {
         AsyncHttpClient client = new AsyncHttpClient();
+        client.setBasicAuth("admin", "superstrongpassword");
         client.get("https://venue-api.herokuapp.com/locations/", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray locations) {//byte[] responseBody) {
