@@ -1,11 +1,6 @@
 package com.norandiaconu.venue;
 
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.preference.PreferenceActivity;
-import android.provider.SyncStateContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,19 +8,14 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.loopj.android.http.*;//JsonHttpResponseHandler;
+import com.loopj.android.http.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,98 +29,76 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     ArrayList<Geofence> mGeofenceList;
-    //private PendingIntent mGeofencePendingIntent;
-    //private Geofence geo;
     ArrayList<LatLng> mGeofenceCoordinates;
     ArrayList<Integer> mGeofenceRadius;
     GeofenceStore mGeofenceStore;
-    //Context contex;
+    ArrayList<OneVenue> alocations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+        alocations = new ArrayList<OneVenue>();
         mGeofenceList = new ArrayList<Geofence>();
         mGeofenceCoordinates = new ArrayList<LatLng>();
         mGeofenceRadius = new ArrayList<Integer>();
         mGeofenceCoordinates.add(new LatLng(36.2141684, -81.6808903));
-        //mGeofenceCoordinates.add(new LatLng(36.181147, -81.635509));
         mGeofenceRadius.add(100);
-        //mGeofenceRadius.add(100);
+
         mGeofenceList.add(new Geofence.Builder()
                 //geo = new Geofence.Builder()
                 // Set the request ID of the geofence. This is a string to identify this
                 // geofence.
                 .setRequestId("building")
-
-                //.setCircularRegion(mGeofenceCoordinates.get(0).latitude, mGeofenceCoordinates.get(0).longitude, mGeofenceRadius.get(0).intValue()
-                .setCircularRegion(0,0,1
-                        //36.2141684,
-                        //-81.6808903,
-                        //100
-                )
+                .setCircularRegion(0, 0, 1)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setTransitionTypes(//Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_DWELL |
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL |
                                 Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setLoiteringDelay(100)
                 .build());
 
-
-
-/*        mGeofenceList.add(new Geofence.Builder()
-                .setRequestId("@string/apartment")
-                .setCircularRegion(mGeofenceCoordinates.get(1).latitude, mGeofenceCoordinates.get(1).longitude, mGeofenceRadius.get(1).intValue()
-                        //36.181147,
-                        //-81.635509,
-                        //100
-                )
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setTransitionTypes(//Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_DWELL |
-                                Geofence.GEOFENCE_TRANSITION_EXIT)
-                .setLoiteringDelay(100)
-                .build());
-*/      Log.v("", "LOOOOOOK");
+        Log.v("", "LOOOOOOK");
         Log.v("", "" + this);
         getLocations();
         int boo = mGeofenceList.size();
         Log.v("", "SUPERFINALLLL: " + boo);
-        //mGeofenceStore = new GeofenceStore(this, mGeofenceList);
     }
 
 
 
 
-    public void getLocations() {// throws JSONException {
+    public void getLocations() {
         AsyncHttpClient client = new AsyncHttpClient();
         client.setBasicAuth("admin", "superstrongpassword");
         client.get("https://venue-api.herokuapp.com/locations/", new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray locations) {//byte[] responseBody) {
+            public void onSuccess(int statusCode, Header[] headers, JSONArray locations) {
                 Log.v("", "STATUS1: " + statusCode);
                 Log.v("", locations.toString());
                 for (int i = 0; i < locations.length(); i++) {
                     try {
                         Log.v("", "ENTER LOOP TIME: " + i);
-                        //int coorSize = mGeofenceCoordinates.size();
-                        //Log.v("", "COOR: " + coorSize);
                         JSONObject location = locations.getJSONObject(i);
                         Log.i("", location.toString());
                         Double longi = location.getDouble("longitude");
                         Double lati = location.getDouble("latitude");
                         Double rad = location.getDouble("radius");
                         String name = location.getString("name");
+                        int id = location.getInt("id");
+                        String messages = location.getString("messages");
+                        String created = location.getString("created");
                         Log.v("", "" + name+ " " + lati + " " + longi);
                         mGeofenceCoordinates.add(new LatLng(lati, longi));
                         mGeofenceRadius.add(200);
-                        //int listSize = mGeofenceList.size();
-                        //Log.v("", "LIST: " + listSize);
+
+                        OneVenue l = new OneVenue(id, messages, name, longi, lati, rad,
+                                created);
+                        alocations.add(l);
+
                         mGeofenceList.add(new Geofence.Builder()
                                 .setRequestId(name)
-                                        //.setCircularRegion(lati, longi, 200)
-                                .setCircularRegion(mGeofenceCoordinates.get(i + 1).latitude, mGeofenceCoordinates.get(i + 1).longitude, 200)//mGeofenceRadius.get(i+1).intValue())
+                                .setCircularRegion(mGeofenceCoordinates.get(i + 1).latitude, mGeofenceCoordinates.get(i + 1).longitude, 200)
                                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
                                 .setLoiteringDelay(100)
@@ -143,16 +111,14 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                 Log.v("", "FINAL LIST: " + finalSize);
                 for (int i = 0; i < mGeofenceCoordinates.size(); i++) {
                     mMap.addCircle(new CircleOptions().center(mGeofenceCoordinates.get(i))
-                            .radius(100)//mGeofenceRadius.get(i).intValue())
+                            .radius(100)
                             .fillColor(0x40ff0000)
                             .strokeColor(Color.TRANSPARENT).strokeWidth(2));
                 }
-                mGeofenceStore = new GeofenceStore(MapsActivity.this, mGeofenceList);
+                mGeofenceStore = new GeofenceStore(MapsActivity.this, mGeofenceList, alocations);
             }
         });
-        //client.cancelAllRequests(true);
-        //client.setTimeout(1);
-        mGeofenceStore = new GeofenceStore(this, mGeofenceList);
+        mGeofenceStore = new GeofenceStore(this, mGeofenceList, alocations);
 
     }
 
@@ -163,7 +129,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
 
     @Override
     protected void onStop() {
-        //mGeofenceStore.disconnect();
         super.onStop();
     }
 
@@ -238,23 +203,3 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
     }
 
 }
-/*
-    private PendingIntent getGeofencePendingIntent() {
-        // Reuse the PendingIntent if we already have it.
-        if (mGeofencePendingIntent != null) {
-            return mGeofencePendingIntent;
-        }
-        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
-        // calling addGeofences() and removeGeofences().
-        return PendingIntent.getService(this, 0, intent, PendingIntent.
-                FLAG_UPDATE_CURRENT);
-    }
-
-    private GeofencingRequest getGeofencingRequest() {
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-        builder.addGeofences(mGeofenceList);
-        return builder.build();
-    }
-    */

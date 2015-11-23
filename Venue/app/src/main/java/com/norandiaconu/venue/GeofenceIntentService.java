@@ -123,40 +123,6 @@ public class GeofenceIntentService extends IntentService {
             globalName = geofences.get(i).getRequestId();
             //geos[i] = geofences.get(i).getRequestId();
         }
-
-        //blah = TextUtils.join(", ", geofenceIds);
-
-        //HERE
-        /*
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get("https://venue-api.herokuapp.com/locations/", new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray locations) {
-                Log.v("", "STATUS2: " + statusCode);
-                Log.v("", locations.toString());
-                for (int i = 0; i < locations.length(); i++) {
-                    try {
-                        Log.v("", "ENTER LOOP TIME: " + i);
-
-                        JSONObject location = locations.getJSONObject(i);
-                        Log.i("", location.toString());
-                        String name = location.getString("name");
-                        String id = location.getString("id");
-                        //method(id);
-                        sendNotification(GeofenceIntentService.this, id, "Title");
-                        if (globalName == name) {
-                            Log.v("", "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIDDDDDDDDDDDDDDDD: " + id);
-                            method(id);
-                            sendNotification(GeofenceIntentService.this, id, "Title");
-                            //globalID = id;
-                        }
-                    } catch (JSONException e) {
-                        Log.v("", "catch");
-                    }
-                }
-            }
-        });
-        */
         moreLocations();
         String combined = TextUtils.join(", ", geofenceIds);
         String note = combined + globalId;
@@ -230,10 +196,4 @@ public class GeofenceIntentService extends IntentService {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-
-    //public String getFences() {
-    //return geos;
-    //return geofenceIds;
-    //    return blah;
-    //}
 }

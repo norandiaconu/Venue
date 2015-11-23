@@ -2,6 +2,8 @@
     <string name="app_name">Venue</string>
     <string name="title_activity_maps">Venue</string>
     <string name="entered">Enter the following messageboard?</string>
-    <string name="title_activity_display_message">Message</string>
+    <string name="title_activity_display_message">Entrance</string>
     <string name="enter_button_message">Enter</string>
+    <string name="title_complex">complex</string>
+    <string name="message_title">Message</string>
 </resources>

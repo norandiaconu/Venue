@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -12,13 +13,17 @@ import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
+import android.widget.ArrayAdapter;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -35,22 +40,17 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by NORAN on 10/6/2015.
  */
-public class MessageBoard extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MessageBoard extends ListActivity{// implements LoaderManager.LoaderCallbacks<Cursor> {
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
     String url = "";
-    //GeofenceIntentService geo;
-    //String [] id = new String [3];
 
-    //String id = "";
-    //String url2 = EntranceMessage.toMessage;
-   //Bundle ex = getIntent().getExtras();
-    //String id = ex.getString("key2");
-    //Log.i("", "1");
-
+    String[] messageArray;
+    int messagesLength = 0;
+    //private Button post_button;
 
     // These are the Contacts rows that we will retrieve
-    static final String[] PROJECTION = new String[] {ContactsContract.Data._ID,
+    static final String[] PROJECTION = new String[]{ContactsContract.Data._ID,
             ContactsContract.Data.DISPLAY_NAME};
 
     // This is the select criteria
@@ -63,6 +63,10 @@ public class MessageBoard extends ListActivity implements LoaderManager.LoaderCa
         //Log.v("", "1");
         Log.v("", "onCreate");
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.messageboard_layout);
+        //LinearLayout layout = (LinearLayout) getWindow().findViewById(R.id.title_complex);
+        //layout.addView(new Button(this));
+        Context context = getApplicationContext();
         url = getIntent().getExtras().getString("arg");
         Log.v("", "MESSAGE: " + url);
         AsyncHttpClient client = new AsyncHttpClient();
@@ -71,34 +75,54 @@ public class MessageBoard extends ListActivity implements LoaderManager.LoaderCa
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray messages) {
                 Context context = getApplicationContext();
-                CharSequence text = "TOAST" + url;
-                int duration = Toast.LENGTH_SHORT;
+                //CharSequence text = "TOAST" + url;
+                int duration = Toast.LENGTH_LONG;
+                //CharSequence text = messages.toString();
+                CharSequence text = "" + messages.length();
+                //
+
+                messagesLength = messages.length();
+                messageArray = new String[messagesLength];
+                for (int i = 0; i < messagesLength; i++) {
+                    try {
+                        JSONObject message = messages.getJSONObject(i);
+                        String temp = message.getString("message");
+                        //messageArray[i] = message.getString("message");
+                        messageArray[i] = temp;
+                    } catch (JSONException e) {
+                        Log.v("", "catch");
+                    }
+                }
+                setListAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, messageArray));
+
+                //
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
                 //Log.v("", "MESSAGENESS");
             }
         });
-        //byte[] responseBody) {
-        //Bundle ex = getIntent().getExtras();
-        //String fromIntentName = ex.getString("key");
-        //String fromIntentId = ex.getString("key2");
-        //id = ex.getString("key2");
-        //Log.v("", "Message: " + id);
-        //Log.v("", "2");
-        //Bundle ex = getIntent().getExtras();
-        //url = ex.getString("key2");
-        //id = ex.getStringArray("key2");
-        //String messageId = id[1];
-        //url = id[2];
-        //String url = "http://venue-api.herokuapp.com/locations/" + messageId + "/messages/";
-        //Log.v("", "URL2: " + url);
+        //final Button post_button = new Button(this);//(Button) findViewById(R.id.enter_button);
+        final Button post_button = (Button) findViewById(R.id.button2);
+        //View v = getLayoutInflater(R.layout.messageboard_layout, getViewGroup(), false);
+        //post_button = (Button)v.
+        post_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), PostMessage.class);
+                //Log.v("", "1" + toMessage);
+                intent.putExtra("arg", url);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+        //messageArray = new String[1];
+        //messageArray[0] = "TEST";
+        //messageArray[messagesLength] = "1TEST";
+        //setListAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, messageArray));
+    }
 
-        //String bam = geo.getFences();
-        //Log.v("", "LOCATIONSTRINGGGGG" + bam);
-        //for(int i = 0; i < bam.size(); i++) {
-        //    Log.v("", "LOCATIONSTRING" + bam[i]);
-        //}
 
+}
+/*
         // Create a progress bar to display while the list loads
         ProgressBar progressBar = new ProgressBar(this);
         progressBar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -112,6 +136,7 @@ public class MessageBoard extends ListActivity implements LoaderManager.LoaderCa
 
         // For the cursor adapter, specify which columns go into which views
         String[] fromColumns = {ContactsContract.Data.DISPLAY_NAME};
+        //String [] fromColumns = messageArray;
         int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
 
         // Create an empty adapter we will use to display the loaded data.
@@ -160,3 +185,4 @@ public class MessageBoard extends ListActivity implements LoaderManager.LoaderCa
     }
 
 }
+*/
