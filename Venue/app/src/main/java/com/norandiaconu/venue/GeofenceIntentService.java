@@ -5,19 +5,13 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 
@@ -34,11 +28,6 @@ import cz.msebera.android.httpclient.Header;
  */
 public class GeofenceIntentService extends IntentService {
 
-    //public String bam = "";
-
-    //String[] geos;
-    //String[] geofenceIds;
-    //String blah;
     String notText = "";
     String globalId = "";
     String globalName = "";
@@ -69,18 +58,15 @@ public class GeofenceIntentService extends IntentService {
                     notificationTitle = "Geofence Entered";
                     break;
                 case Geofence.GEOFENCE_TRANSITION_DWELL:
-                    notificationTitle = "Geofence Dwell";
-                    //openEntrance();
+                    notificationTitle = "Geofence Entered";
                     dwelling = true;
                     break;
                 case Geofence.GEOFENCE_TRANSITION_EXIT:
-                    notificationTitle = "Geofence Exit";
+                    notificationTitle = "Geofence Exited";
                     break;
                 default:
                     notificationTitle = "Geofence Unknown";
             }
-            //String newNot = getTriggeringGeofences(intent)
-            //String newNot = GeofencingEvent.fromIntent(intent).getTriggeringGeofences().getRequestId();
             sendNotification(this, getTriggeringGeofences(intent), notificationTitle);
             if(dwelling == true){
                 openEntrance();
@@ -90,10 +76,10 @@ public class GeofenceIntentService extends IntentService {
 
     private void sendNotification(Context context, String notificationText, String notificationTitle) {
         notText = notificationText;
-        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK, "");
-        wakeLock.acquire();
+        //PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        //PowerManager.WakeLock wakeLock = pm.newWakeLock(
+        //        PowerManager.PARTIAL_WAKE_LOCK, "");
+        //wakeLock.acquire();
 
         Notification.Builder notificationBuilder = new Notification.Builder(
                 context).setSmallIcon(R.drawable.ic_launcher)
@@ -105,28 +91,25 @@ public class GeofenceIntentService extends IntentService {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, notificationBuilder.build());
 
-        wakeLock.release();
+        //wakeLock.release();
     }
 
     public String getTriggeringGeofences(Intent intent) {
-        //String id = "";
         GeofencingEvent geofenceEvent = GeofencingEvent.fromIntent(intent);
         List<Geofence> geofences = geofenceEvent
                 .getTriggeringGeofences();
 
-        String[] geofenceIds;// = new String[geofences.size()];
+        String[] geofenceIds;
         geofenceIds = new String[geofences.size()];
-        //geos = new String[geofences.size()];
 
         for (int i = 0; i < geofences.size(); i++) {
             geofenceIds[i] = geofences.get(i).getRequestId();
             globalName = geofences.get(i).getRequestId();
-            //geos[i] = geofences.get(i).getRequestId();
         }
         moreLocations();
         String combined = TextUtils.join(", ", geofenceIds);
-        String note = combined + globalId;
-        //return TextUtils.join(", ", geofenceIds);
+        //String note = combined + globalId;
+        String note = combined;
         return note;
     }
 
@@ -149,18 +132,11 @@ public class GeofenceIntentService extends IntentService {
                         String name = location.getString("name");
                         String id = location.getString("id");
                         String url = location.getString("messages");
-                        //method(id);
                         Log.v("", "ID: " + id);
                         Log.v("", "GN: " + globalName + "; NAME: " + name);
-                        //sendNotification(GeofenceIntentService.this, id, "Title");
                         if(globalName.equals(name)){
-                            Log.v("", "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIDDDDDDDDDDDDDDDD: ");
-                            //globalName = name;
                             globalId = id;
                             globalUrl = url;
-                            //method(id);
-                            //sendNotification(GeofenceIntentService.this, id, "Title");
-                            //globalID = id;
                         }
                     } catch (JSONException e) {
                         Log.v("", "catch");
@@ -170,28 +146,16 @@ public class GeofenceIntentService extends IntentService {
         });
     }
 
-    public void method(String param){
-        globalId = param;
-    }
-
     public void openEntrance() {
         Log.v("", "FGN: " + globalName);
         Log.v("", "FGID: " + globalId);
-        //Toast toast = Toast.makeText(this, "FGN: " + globalName + "; FGID: " + globalId, 1);// Toast.LENGTH_SHORT);
-        //toast.show();
-        String str = globalName;
-        String id = globalId;
         String [] array = new String[3];
         array[0] = globalName;
         array[1] = globalId;
         array[2] = globalUrl;
         Bundle bundleName = new Bundle();
-        //bundleName.putString("key", str);
-        //bundleName.putString("key2", id);
         bundleName.putStringArray("key", array);
         Intent intent = new Intent(this, EntranceMessage.class);
-        //String str = globalName;
-        //intent.putExtra(notText, str);
         intent.putExtras(bundleName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

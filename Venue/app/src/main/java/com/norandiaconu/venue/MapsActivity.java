@@ -43,26 +43,19 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         mGeofenceList = new ArrayList<Geofence>();
         mGeofenceCoordinates = new ArrayList<LatLng>();
         mGeofenceRadius = new ArrayList<Integer>();
-        mGeofenceCoordinates.add(new LatLng(36.2141684, -81.6808903));
+        mGeofenceCoordinates.add(new LatLng(0, 0));
         mGeofenceRadius.add(100);
 
         mGeofenceList.add(new Geofence.Builder()
-                //geo = new Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
+                // Set the request ID of the geofence. This is a string to identify this geofence.
                 .setRequestId("building")
                 .setCircularRegion(0, 0, 1)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL |
-                                Geofence.GEOFENCE_TRANSITION_EXIT)
+                        Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setLoiteringDelay(100)
                 .build());
-
-        Log.v("", "LOOOOOOK");
-        Log.v("", "" + this);
         getLocations();
-        int boo = mGeofenceList.size();
-        Log.v("", "SUPERFINALLLL: " + boo);
     }
 
 
@@ -88,17 +81,20 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                         int id = location.getInt("id");
                         String messages = location.getString("messages");
                         String created = location.getString("created");
-                        Log.v("", "" + name+ " " + lati + " " + longi);
+                        Log.v("", "" + name + " " + lati + " " + longi);
                         mGeofenceCoordinates.add(new LatLng(lati, longi));
-                        mGeofenceRadius.add(200);
-
+                        //mGeofenceRadius.add(200);
                         OneVenue l = new OneVenue(id, messages, name, longi, lati, rad,
                                 created);
                         alocations.add(l);
+                        mMap.addCircle(new CircleOptions().center(new LatLng(lati, longi))
+                                .radius(rad)
+                                .fillColor(0x40ff0000)
+                                .strokeColor(Color.TRANSPARENT).strokeWidth(2));
 
                         mGeofenceList.add(new Geofence.Builder()
                                 .setRequestId(name)
-                                .setCircularRegion(mGeofenceCoordinates.get(i + 1).latitude, mGeofenceCoordinates.get(i + 1).longitude, 200)
+                                .setCircularRegion(mGeofenceCoordinates.get(i + 1).latitude, mGeofenceCoordinates.get(i + 1).longitude, rad.floatValue())
                                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
                                 .setLoiteringDelay(100)
@@ -109,12 +105,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                 }
                 int finalSize = mGeofenceList.size();
                 Log.v("", "FINAL LIST: " + finalSize);
-                for (int i = 0; i < mGeofenceCoordinates.size(); i++) {
-                    mMap.addCircle(new CircleOptions().center(mGeofenceCoordinates.get(i))
-                            .radius(100)
-                            .fillColor(0x40ff0000)
-                            .strokeColor(Color.TRANSPARENT).strokeWidth(2));
-                }
                 mGeofenceStore = new GeofenceStore(MapsActivity.this, mGeofenceList, alocations);
             }
         });
@@ -182,24 +172,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         mMap.addMarker(new MarkerOptions().position(new LatLng(36.2143919, -81.6712084)).title("ASU"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
                 36.2143919, -81.6712084), 14));
-        //(apt)        36.181147, -81.635509), 14));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         mMap.setIndoorEnabled(false);
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(this);
-
     }
 
     @Override
-    public void onCameraChange(CameraPosition position) {
-        // Makes sure the visuals remain when zoom changes.
-        for(int i = 0; i < mGeofenceCoordinates.size(); i++) {
-            mMap.addCircle(new CircleOptions().center(mGeofenceCoordinates.get(i))
-                    .radius(mGeofenceRadius.get(i).intValue())
-                    .fillColor(0x40ff0000)
-                    .strokeColor(Color.TRANSPARENT).strokeWidth(2));
-        }
-    }
-
+    public void onCameraChange(CameraPosition position) {}
 }
